@@ -1,0 +1,101 @@
+# Student Grade Calculator - Colorful Report Card with Remarks
+
+from colorama import Fore, Style, init
+init(autoreset=True)  # Reset colors after each print
+
+# Step 1: Take input from the user
+num_subjects = int(input("Enter the number of subjects: "))
+
+subjects = []
+marks_list = []
+
+for i in range(1, num_subjects + 1):
+    subject_name = input(f"Enter name of subject {i}: ")
+    while True:
+        try:
+            mark = float(input(f"Enter marks obtained in {subject_name} (out of 100): "))
+            if 0 <= mark <= 100:
+                subjects.append(subject_name)
+                marks_list.append(mark)
+                break
+            else:
+                print(Fore.RED + "Marks should be between 0 and 100. Try again.")
+        except ValueError:
+            print(Fore.RED + "Invalid input. Please enter a number.")
+
+# Step 2: Calculate total and average
+total_marks = sum(marks_list)
+average_percentage = total_marks / num_subjects
+
+# Step 3: Determine grades for each subject with emojis
+subject_grades = []
+subject_results = []
+
+for mark in marks_list:
+    if mark >= 90:
+        grade = Fore.GREEN + "A+ 🎯"
+    elif mark >= 80:
+        grade = Fore.GREEN + "A ✨"
+    elif mark >= 70:
+        grade = Fore.CYAN + "B 👍"
+    elif mark >= 60:
+        grade = Fore.CYAN + "C 🙂"
+    elif mark >= 50:
+        grade = Fore.YELLOW + "D 😐"
+    else:
+        grade = Fore.RED + "F ❌"
+    subject_grades.append(grade)
+    
+    if mark >= 35:
+        subject_results.append(Fore.GREEN + "Pass ✅")
+    else:
+        subject_results.append(Fore.RED + "Fail ❌")
+
+# Step 4: Determine overall grade with emoji
+if average_percentage >= 90:
+    overall_grade = Fore.GREEN + "A+ 🎯"
+elif average_percentage >= 80:
+    overall_grade = Fore.GREEN + "A ✨"
+elif average_percentage >= 70:
+    overall_grade = Fore.CYAN + "B 👍"
+elif average_percentage >= 60:
+    overall_grade = Fore.CYAN + "C 🙂"
+elif average_percentage >= 50:
+    overall_grade = Fore.YELLOW + "D 😐"
+else:
+    overall_grade = Fore.RED + "F ❌"
+
+# Step 5: Determine overall result with emoji
+overall_result = Fore.GREEN + "Pass ✅" if all(mark >= 35 for mark in marks_list) else Fore.RED + "Fail ❌"
+
+# Step 6: Determine remark based on average
+if average_percentage >= 90:
+    remark = Fore.GREEN + "Excellent! 🌟 Keep it up!"
+elif average_percentage >= 80:
+    remark = Fore.GREEN + "Very Good! 👍"
+elif average_percentage >= 70:
+    remark = Fore.CYAN + "Good! 🙂 You can do even better."
+elif average_percentage >= 60:
+    remark = Fore.YELLOW + "Fair 😐 Try to improve."
+elif average_percentage >= 50:
+    remark = Fore.YELLOW + "Needs Improvement ⚠️"
+else:
+    remark = Fore.RED + "Poor ❌ Work Harder!"
+
+# Step 7: Display colorful & emoji report card with remark
+print("\n" + "-"*70)
+print(" " * 12 + Fore.MAGENTA + Style.BRIGHT + "🎓 STUDENT REPORT CARD 🎓")
+print("-"*70)
+
+print(f"{'Subject':<15}{'Marks':<10}{'Grade':<12}{'Result'}")
+print("-"*70)
+for i in range(num_subjects):
+    print(f"{subjects[i]:<15}{marks_list[i]:<10}{subject_grades[i]:<12}{subject_results[i]}")
+
+print("-"*70)
+print(f"{'Total Marks':<15}: {total_marks}")
+print(f"{'Average (%)':<15}: {average_percentage:.2f}")
+print(f"{'Overall Grade':<15}: {overall_grade}")
+print(f"{'Overall Result':<15}: {overall_result}")
+print(f"{'Remark':<15}: {remark}")
+print("-"*70)
