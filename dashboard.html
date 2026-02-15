@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM PRO Modern Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #eee;
+            overflow-x: hidden;
+        }
+        /* Sidebar */
+        
+        .sidebar {
+            width: 240px;
+            background: #111827;
+            color: #eee;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 1.6rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar ul li {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        
+        .sidebar ul li:hover {
+            background: #2563eb;
+        }
+        
+        .sidebar ul li.active {
+            background: #2563eb;
+        }
+        /* Main Content */
+        
+        .main {
+            flex: 1;
+            padding: 30px 40px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        /* Quick Summary Cards */
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-card h3 {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        /* Action Cards */
+        
+        .cards {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 50px;
+            /* a little more spacing below */
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            flex: 1;
+            min-width: 220px;
+            /* slightly bigger */
+            padding: 35px;
+            /* more padding for larger size */
+            border-radius: 30px;
+            /* slightly more rounded */
+            font-size: 1.2rem;
+            /* bigger text */
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            /* more spacing between icon and text */
+            transition: 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-7px);
+            /* slightly stronger hover effect */
+            background: #2563eb;
+        }
+        /* Sections */
+        
+        .transaction,
+        .profile-section,
+        .fund-transfer,
+        .analytics {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        input {
+            padding: 12px 14px;
+            margin: 8px 0 18px 0;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #1f2937;
+            color: #eee;
+            font-size: 1rem;
+        }
+        
+        button {
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+        }
+        
+        .btn-secondary {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #059669;
+        }
+        /* Notification */
+        
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+        }
+        /* Transaction List */
+        
+        .transaction ul {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .transaction ul li {
+            padding: 12px 0;
+            border-bottom: 1px solid #444;
+        }
+        /* Analytics Chart */
+        
+        #analyticsChart {
+            margin-top: 25px;
+        }
+        /* Profile */
+        
+        .profile-section p {
+            margin: 8px 0;
+            font-size: 1.05rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🏦 ATM PRO</h2>
+        <ul>
+            <li class="active" onclick="activateSection(this,'dashboard')">🏠 Dashboard</li>
+            <li onclick="activateSection(this,'fund-transfer')">💸 Fund Transfer</li>
+            <li onclick="activateSection(this,'history')">📜 Transaction History</li>
+            <li onclick="activateSection(this,'profile')">👤 Profile</li>
+            <li onclick="activateSection(this,'analytics')">📊 Analytics</li>
+            <li onclick="activateSection(this,'recharge-section')">📱 Recharge</li>
+            <li onclick="activateSection(this,'paybill-section')">🧾 Pay Bill</li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <h2>Welcome, Kavya 👋</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Quick Summary Cards -->
+        <div class="summary-cards" id="summaryCards">
+            <div class="summary-card">
+                <h3>Current Balance</h3>
+                <p id="balance">₹ 5000</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Deposits</h3>
+                <p id="totalDeposits">₹ 1000</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Withdraws</h3>
+                <p id="totalWithdraws">₹ 500</p>
+            </div>
+            <div class="summary-card">
+                <h3>Last Transaction</h3>
+                <p id="lastTransaction">Deposited ₹1000</p>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="cards">
+            <div class="card" onclick="depositPrompt()">💰 Deposit</div>
+            <div class="card" onclick="withdrawPrompt()">💸 Withdraw</div>
+            <div class="card" onclick="activateSection(null,'history')">📜 Transactions</div>
+            <div class="card" onclick="rechargePrompt()">📱 Recharge</div>
+            <div class="card" onclick="payBillPrompt()">🧾 Pay Bill</div>
+        </div>
+
+        <!-- Fund Transfer Section -->
+        <div class="fund-transfer" id="fund-transfer">
+            <h3>Fund Transfer</h3>
+            <input type="text" id="recipientAccount" placeholder="Recipient Account Number">
+            <input type="number" id="transferAmount" placeholder="Amount to Transfer">
+            <button class="btn-primary" onclick="transferFunds()">Transfer</button>
+        </div>
+
+        <!-- Recharge Section -->
+        <div class="fund-transfer" id="recharge-section">
+            <h3>Mobile Recharge</h3>
+            <input type="text" id="mobileNumber" placeholder="Enter Mobile Number">
+            <input type="number" id="rechargeAmount" placeholder="Enter Amount">
+            <button class="btn-primary" onclick="recharge()">Recharge</button>
+        </div>
+
+        <!-- Pay Bill Section -->
+        <div class="fund-transfer" id="paybill-section">
+            <h3>Pay Bill</h3>
+            <input type="text" id="billerName" placeholder="Enter Biller Name">
+            <input type="number" id="billAmount" placeholder="Enter Amount">
+            <button class="btn-primary" onclick="payBill()">Pay</button>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="transaction" id="history">
+            <h3>Transaction History</h3>
+            <input type="text" id="searchInput" placeholder="Search transactions..." onkeyup="searchTransactions()">
+            <ul id="historyList">
+                <li>Deposited ₹1000</li>
+                <li>Withdraw ₹500</li>
+            </ul>
+            <button class="btn-secondary" onclick="downloadStatement()">Download Mini Statement</button>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section" id="profile">
+            <h3>Profile</h3>
+            <p><strong>Name:</strong> Kavya</p>
+            <p><strong>Account Number:</strong> 1234567890</p>
+            <p><strong>IFSC Code:</strong> SBIN0001234</p>
+            <p><strong>Branch:</strong> Bangalore</p>
+            <p><strong>Account Type:</strong> Savings</p>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="analytics" id="analytics">
+            <h3>Monthly Analytics</h3>
+            <canvas id="analyticsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification"></div>
+
+    <script>
+        let balance = 5000;
+        let totalDeposits = 1000;
+        let totalWithdraws = 500;
+        let transactions = ["Deposited ₹1000", "Withdraw ₹500"];
+        let monthlyData = {
+            deposits: [1000, 2000, 1500, 2500, 3000, 1200],
+            withdraws: [500, 800, 400, 600, 700, 500]
+        };
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerText = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2500);
+        }
+
+        function logout() {
+            // Optional: clear any stored user info
+            localStorage.removeItem('user'); // if you used localStorage for login
+            alert("You have been logged out!");
+            window.location.href = "login.html"; // redirect to login page
+        }
+
+        function activateSection(li, section) {
+            document.querySelectorAll('.transaction, .profile-section, .fund-transfer, .analytics').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.sidebar ul li').forEach(el => el.classList.remove('active'));
+            if (li) li.classList.add('active');
+            if (section === 'dashboard') return;
+            const el = document.getElementById(section);
+            if (el) el.style.display = 'block';
+            if (section === 'analytics') drawChart();
+        }
+
+        function updateSummary() {
+            document.getElementById("balance").innerText = "₹ " + balance;
+            document.getElementById("totalDeposits").innerText = "₹ " + totalDeposits;
+            document.getElementById("totalWithdraws").innerText = "₹ " + totalWithdraws;
+            document.getElementById("lastTransaction").innerText = transactions[0] || "-";
+        }
+
+        function depositPrompt() {
+            let amount = prompt("Enter deposit amount:");
+            if (amount && amount > 0) {
+                balance += parseInt(amount);
+                totalDeposits += parseInt(amount);
+                transactions.unshift("Deposited ₹" + amount);
+                addHistory("Deposited ₹" + amount);
+                updateSummary();
+                showNotification("Deposited ₹" + amount);
+            }
+        }
+
+        function withdrawPrompt() {
+            let amount = prompt("Enter withdraw amount:");
+            if (amount && amount > 0) {
+                if (amount <= balance) {
+                    balance -= parseInt(amount);
+                    totalWithdraws += parseInt(amount);
+                    transactions.unshift("Withdraw ₹" + amount);
+                    addHistory("Withdraw ₹" + amount);
+                    updateSummary();
+                    showNotification("Withdraw ₹" + amount);
+                } else {
+                    showNotification("Insufficient Balance");
+                }
+            }
+        }
+
+        function addHistory(text) {
+            let li = document.createElement("li");
+            li.innerText = text;
+            document.getElementById("historyList").prepend(li);
+        }
+
+        function transferFunds() {
+            let account = document.getElementById('recipientAccount').value;
+            let amount = parseInt(document.getElementById('transferAmount').value);
+            if (!account || account.length !== 10) {
+                showNotification("Enter valid 10-digit account");
+                return;
+            }
+            if (!amount || amount <= 0) {
+                showNotification("Enter valid amount");
+                return;
+            }
+            if (amount > balance) {
+                showNotification("Insufficient Balance");
+                return;
+            }
+
+            balance -= amount;
+            totalWithdraws += amount;
+            transactions.unshift(`Transferred ₹${amount} to ${account}`);
+            addHistory(`Transferred ₹${amount} to ${account}`);
+            updateSummary();
+            showNotification(`Transferred ₹${amount} to ${account}`);
+            document.getElementById('recipientAccount').value = '';
+            document.getElementById('transferAmount').value = '';
+        }
+
+        // Recharge Functions
+        function rechargePrompt() {
+            activateSection(null, 'recharge-section');
+        }
+
+        function recharge() {
+            const mobile = document.getElementById('mobileNumber').value;
+            const amount = parseInt(document.getElementById('rechargeAmount').value);
+
+            if (!mobile || mobile.length !== 10) {
+                showNotification("Enter valid 10-digit mobile number");
+                return;
+            }
+            if (!amount || amount <= 0) {
+                showNotification("Enter valid amount");
+                return;
+            }
+            if (amount > balance) {
+                showNotification("Insufficient Balance");
+                return;
+            }
+
+            balance -= amount;
+            totalWithdraws += amount;
+            transactions.unshift(`Recharged ₹${amount} to ${mobile}`);
+            addHistory(`Recharged ₹${amount} to ${mobile}`);
+            updateSummary();
+            showNotification(`Recharged ₹${amount} to ${mobile}`);
+
+            document.getElementById('mobileNumber').value = '';
+            document.getElementById('rechargeAmount').value = '';
+        }
+
+        // Pay Bill Functions
+        function payBillPrompt() {
+            activateSection(null, 'paybill-section');
+        }
+
+        function payBill() {
+            const biller = document.getElementById('billerName').value;
+            const amount = parseInt(document.getElementById('billAmount').value);
+
+            if (!biller) {
+                showNotification("Enter biller name");
+                return;
+            }
+            if (!amount || amount <= 0) {
+                showNotification("Enter valid amount");
+                return;
+            }
+            if (amount > balance) {
+                showNotification("Insufficient Balance");
+                return;
+            }
+
+            balance -= amount;
+            totalWithdraws += amount;
+            transactions.unshift(`Paid ₹${amount} to ${biller}`);
+            addHistory(`Paid ₹${amount} to ${biller}`);
+            updateSummary();
+            showNotification(`Paid ₹${amount} to ${biller}`);
+
+            document.getElementById('billerName').value = '';
+            document.getElementById('billAmount').value = '';
+        }
+
+        function downloadStatement() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text("ATM PRO Mini Statement", 20, 20);
+            doc.setFontSize(12);
+            let y = 30;
+            transactions.forEach(tr => {
+                doc.text(tr, 20, y);
+                y += 10;
+            });
+            doc.save("MiniStatement.pdf");
+            showNotification("Mini Statement Downloaded");
+        }
+
+        function searchTransactions() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.getElementById('historyList').getElementsByTagName('li');
+            for (let i = 0; i < items.length; i++) {
+                items[i].style.display = items[i].innerText.toLowerCase().includes(input) ? "" : "none";
+            }
+        }
+
+        let chart;
+
+        function drawChart() {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "Deposits",
+                        data: monthlyData.deposits.slice(-6),
+                        borderColor: "#10b981",
+                        backgroundColor: "#10b98133",
+                        fill: true
+                    }, {
+                        label: "Withdraws",
+                        data: monthlyData.withdraws.slice(-6),
+                        borderColor: "#ef4444",
+                        backgroundColor: "#ef444433",
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#eee'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#eee'
+                            },
+                            grid: {
+                                color: '#444'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#eee'
+                            },
+                            grid: {
+                                color: '#444'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        updateSummary();
+    </script>
+</body>
+
+</html>

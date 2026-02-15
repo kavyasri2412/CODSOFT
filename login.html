@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure ATM Login</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #eee;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            width: 350px;
+            text-align: center;
+        }
+        
+        .login-card h1 {
+            margin-bottom: 10px;
+        }
+        
+        .login-card p.subtitle {
+            margin-bottom: 25px;
+            color: #aaa;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #1f2937;
+            color: #eee;
+            font-size: 1rem;
+        }
+        
+        .input-group label {
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            background: #0f172a;
+            padding: 0 5px;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background: #1e40af;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <h1>🏦 Secure ATM</h1>
+        <p class="subtitle">Welcome Back</p>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" required>
+                <label>Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="pin" required maxlength="4">
+                <label>4 Digit PIN</label>
+            </div>
+
+            <button type="submit">Login Securely</button>
+        </form>
+
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // prevent page refresh
+
+            const username = document.getElementById('username').value.trim();
+            const pin = document.getElementById('pin').value.trim();
+
+            if (username === "" || pin === "" || pin.length !== 4) {
+                alert("❌ Enter a valid username and 4-digit PIN");
+                return;
+            }
+
+            // Save the user dynamically for dashboard
+            const user = {
+                username: username,
+                pin: pin,
+                balance: 5000 // starting balance
+            };
+
+            localStorage.setItem('user', JSON.stringify(user));
+
+            // Redirect to dashboard page
+            window.location.href = "dashboard.html";
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #141e30, #243b55);
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 50px;
+    width: 350px;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: white;
+}
+
+.login-card h1 {
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.subtitle {
+    margin-bottom: 30px;
+    color: #ccc;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    outline: none;
+    color: white;
+    font-size: 16px;
+}
+
+.input-group label {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #aaa;
+    transition: 0.3s;
+}
+
+.input-group input:focus+label,
+.input-group input:valid+label {
+    top: -10px;
+    font-size: 12px;
+    color: #00c6ff;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
